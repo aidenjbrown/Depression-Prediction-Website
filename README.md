@@ -1,2 +1,2 @@
-# Depression-Prediction-Website
-Depression Prediction Website by Aiden Brown and Tony Nguyen
+# Website Template
+Template repository for M244 Projects
