@@ -4,57 +4,49 @@ format: html
 editor: visual
 ---
 
+```{r}
+library(reticulate)
+reticulate::use_virtualenv("./.venv")
+```
+
 ## **1. What is your outcome variable(s)? How well does it measure the outcome you are interested? How does it relate to your expectations?**
 
 Our outcome variable is depression score. It measures the outcome we are interested in very well because it is the exact criteria the CDC uses to estimate the prevalence of depression across the population.
 
 ## **2. What are your key explanatory variables?**
 
-Our key explanatory variables are race (RIDRETH3 and race_label), income (INDHHIN2 / income_label), hours worked last week (OCQ180), and level of education (DMDEDUC2 / education_label). We also include sleep-related variables such as weekday sleep hours (SLD012), weekend sleep hours (SLD013), perception of weight (WHQ030), and BMI (computed from WHD010 and WHD020).
+Our key explanatory variables are race (`RIDRETH3` and `race_label`), income (`INDHHIN2` / `income_label`), hours worked last week (`OCQ180`), and level of education (`DMDEDUC2` / `education_label`). We also include sleep-related variables such as weekday sleep hours (`SLD012`), weekend sleep hours (`SLD013`), perception of weight (`WHQ030`), and BMI (computed from `WHD010` and `WHD020`).
 
 ## **3. What data cleaning did you have to do?**
 
-We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN so the scores could only reach a max of 27 (which is the max score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric and replacing NHANES special codes such as 77777 and 99999 in OCQ180, and 77 and 99 in sleep variables like SLD012 and SLD013 with NaN.
+We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN so the scores could only reach a max of 27 (which is the max score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric and replacing NHANES special codes such as 77777 and 99999 in `OCQ180`, and 77 and 99 in sleep variables like `SLD012` and `SLD013` with NaN.
 
 ## **4. How did you wrangle the data?**
 
-We wrangled the data by performing an inner merge on all of the 4 raw datasets by SEQN number. We chose an inner merge because we wanted to have the most data per row possible even if it meant dropping some participants. We also dropped all of the variables we did not need from the raw data by choosing to only keep the subset that we did need, including OCQ180, SLD012, SLD013, WHQ030, WHD010, WHD020, and depression_score.
+We wrangled the data by performing an inner merge on all of the 4 raw datasets by SEQN number. We chose an inner merge because we wanted to have the most data per row possible even if it meant dropping some participants. We also dropped all of the variables we did not need from the raw data by choosing to only keep the subset that we did need, including `OCQ180`, `SLD012`, `SLD013`, `WHQ030`, `WHD010`, `WHD020`, and `depression_score`3.
 
 ## **5. Are you deciding to exclude any observations? If so, why?**
 
-We are deciding to exclude any observations that have NaN for depression_score since it is our key outcome variable and if a participant does not have that score calculated, that participant is not useful for this data analysis. We also excluded any participants that did not answer at least 6 out of the 9 depression indicator questions because we wanted to minimize skewing the data to the left due to participants simply answering fewer questions. In addition, we excluded invalid or missing values in explanatory variables such as OCQ180, SLD012, SLD013, WHD010, and WHD020.
+We are deciding to exclude any observations that have NaN for depression_score since it is our key outcome variable and if a participant does not have that score calculated, that participant is not useful for this data analysis. We also excluded any participants that did not answer at least 6 out of the 9 depression indicator questions because we wanted to minimize skewing the data to the left due to participants simply answering fewer questions. In addition, we excluded invalid or missing values in explanatory variables such as `OCQ180`, `SLD012`, `SLD013`, `WHD010`, and `WHD020`.
 
 ## **6. Did you have to create any new variables from existing variables? If so, how and why?**
 
-We did have to create the depression score variable (depression_score) because it was not calculated for us. So if the answer to each question related to depression symptoms had between a 0 and 3 as a response, we added it to the other responses for the same participant for all the depression symptoms to get a score with the max being 27. We wanted to create this variable so we could determine if certain predictors were associated with depression more broadly rather than individual symptoms only. Additionally, we created new variables for any of the encoded categorical variables such as income or race because the encoded values were hard to interpret without looking at the dataset's codebook. We also created BMI using WHD010 and WHD020 using the formula 703 \* (WHD020 / WHD010\^2).
+We did have to create the depression score variable (`depression_score`) because it was not calculated for us. So if the answer to each question related to depression symptoms had between a 0 and 3 as a response, we added it to the other responses for the same participant for all the depression symptoms to get a score with the max being 27. We wanted to create this variable so we could determine if certain predictors were associated with depression more broadly rather than individual symptoms only. Additionally, we created new variables for any of the encoded categorical variables such as income or race because the encoded values were hard to interpret without looking at the dataset's codebook. We also created BMI using `WHD010` and `WHD020` using the formula `703 * (WHD020 / WHD010^2)`.
 
 ```{python}
-# Supressing warnings and messages.
-import warnings
 import pandas as pd
-warnings.filterwarnings("ignore")
-pd.options.mode.chained_assignment = None
 
-# Importing the data
+depression = pd.read_csv('./data/Depression_Scores.csv')
 
+income = pd.read_csv('./data/Income.csv')
 
-depression = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/DPQ_J.xpt')
-depression.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Depression_Scores.csv', index=False)
+demographics = pd.read_csv('./data/Demographics.csv')
 
-income = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/INQ_J.xpt')
-income.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Income.csv', index=False)
+sleep = pd.read_csv('./data/Sleep.csv')
 
-demographics = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/DEMO_J.xpt')
-demographics.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Demographics.csv', index=False)
+occupation = pd.read_csv('./data/Occupation.csv')
 
-sleep = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/SLQ_J.xpt')
-sleep.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Sleep.csv', index=False)
-
-occupation = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/OCQ_J.xpt')
-occupation.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Occupation.csv', index=False)
-
-weight = pd.read_sas('/content/drive/MyDrive/DataScienceXPTFiles/WHQ_J.xpt')
-weight.to_csv('/content/drive/MyDrive/DataScienceXPTFiles/Weight.csv', index=False)
+weight = pd.read_csv('./data/Weight.csv')
 ```
 
 ```{python}
