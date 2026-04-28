@@ -4,11 +4,6 @@ format: html
 editor: visual
 ---
 
-```{r}
-library(reticulate)
-reticulate::use_virtualenv("./.venv")
-```
-
 ## **1. What is your outcome variable(s)? How well does it measure the outcome you are interested? How does it relate to your expectations?**
 
 Our outcome variable is depression score. It measures the outcome we are interested in very well because it is the exact criteria the CDC uses to estimate the prevalence of depression across the population.
@@ -49,7 +44,7 @@ occupation = pd.read_csv('./data/Occupation.csv')
 weight = pd.read_csv('./data/Weight.csv')
 ```
 
-```{python}
+```{python merge}
 # Now we will merge all of the data based on the SEQN number. We are using inner merge to make sure the SEQN exists in both datasets.
 
 merge1 = pd.merge(depression, income, on='SEQN', how = "inner")
@@ -64,7 +59,7 @@ print(df.shape)
 # Now we want to determine what explanatory variables we are going to keep.
 ```
 
-```{python}
+```{python import and clean}
 import numpy as np
 
 # First we are going to replace any response with NaN for the depression indicators that aren't a valid depression score (0-3,) in other words, the responses that did not mention whether
@@ -98,7 +93,7 @@ df["depression_score"] = df[depression_cols].sum(axis=1)
 print(df.shape)
 ```
 
-```{python}
+```{python decode}
 # Some of the data is in byte format so, I use the decode comment if it is
 df = df.map(lambda x: x.decode() if isinstance(x, bytes) else x)
 
@@ -112,7 +107,7 @@ df["WHD020"] = pd.to_numeric(df["WHD020"], errors="coerce").replace([7777, 9999]
 
 ```
 
-```{python}
+```{python drop and summarize}
 # Now it is time to drop all of the variables we don't need
 
 columns_we_want = ["SEQN","WHD010","WHD020", "WHQ030", "SLD012", "SLD013", "RIAGENDR", "RIDRETH3", "INDHHIN2", "INDFMPIR", "DMDEDUC2", "DMDEDUC3", "OCQ180", "depression_score"]
@@ -121,7 +116,7 @@ df = df[columns_we_want].copy()
 df[["depression_score", "WHD010","WHD020", "SLD012", "SLD013", "INDFMPIR", "OCQ180"]].describe().round(2)
 ```
 
-```{python}
+```{python cleaning RIDRETH3}
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -148,7 +143,7 @@ pd.DataFrame({
 })
 ```
 
-```{python}
+```{python race box plot}
 # Before we make the box plot, we have to put the race categories in the order the dataset did.
 
 
@@ -169,7 +164,7 @@ plt.show()
 
 It appears that while most races have a median depression score of approximately 11, Asians have a median depression score of about 10, a whole point less than the average median score across races. Additionally Other Hispanics have a much wider distribution of depression scores between the first and third quartile compared to any of the other races. Otherwise, the distribution of depression scores is relatively uniform among all races, suggesting a weak relationship between race and depression score.
 
-```{python}
+```{python education cleaning}
 # Next we want to work on comparing education level of adults vs depression score, so now we map the actual categorical variables onto the encoded variables for education.
 
 education_map = {
@@ -194,7 +189,7 @@ pd.DataFrame({
 
 ```
 
-```{python}
+```{python education box plot}
 # Before we make the box plot, we put levels of education in order of least to most education.
 
 
@@ -216,7 +211,7 @@ plt.show()
 
 It appears that those who have graduated high school (or the equivalent) or have received a higher level of education have a substantially lower median depression score than those who did not reach this level of education. While the median depression score of those with less education than the equivalent of a high school degree is about 13, it is only about 10.5 for those who have received the equivalent of a high school education or higher.
 
-```{python}
+```{python income cleaning}
 # Now we want to work on comparing participants' income level to to their depression score, so lets map the actual categorical variables onto the encoded variables for income.
 
 income_map = {
@@ -249,7 +244,7 @@ pd.DataFrame({
 })
 ```
 
-```{python}
+```{python income box plot}
 # Before we make the box plot, we have to put levels of income in the order the CDC put them in (more or less in the order of least to most income.)
 
 
@@ -301,7 +296,7 @@ plt.show()
 
 It appears that those whose households make 35,000 to 44,999, 55,000 to 64,999, 100,000 and over, and under 20,000 dollars have a substantially lower median depression score than those who make any other quantity of money. This is fascinating because the trend that a higher household income is correlated with a lower depression score is challenged by the fact that the median depression score for those whose household makes 20,000 dollars and over is much smaller than those who make under 20,000 dollars with the former and latter levels having median depression scores of approximately 10.5 and 13 respectively. Additionally, participants whose household income range from 0 to 54,999 dollars have a much higher spread of depression scores than those who make 55,000 dollars or more a year, suggesting that the range of depression scores decreases as income increases once the 55,000 dollar threshold is reached.
 
-```{python}
+```{python depression histogram}
 # Making a histogram of depression scores to determine which scores are most common across all participants
 
 sns.histplot(data=df, x="depression_score", bins=20)
@@ -318,7 +313,7 @@ plt.show()
 \
 Based on the histogram, the most common depression scores appear to be from about 10-12.5. Additionally, the histogram is skewed right which indicates that there is an observable minority of participants with a depression score greater than or equal to 12.5 (as there is no observed score above 25). Despite the skew, the majority of participants have a relatively low depression score.
 
-```{python}
+```{python occupation regression plot}
 # select relevant columns and create a copy
 tmp_work = df[['OCQ180', 'depression_score']].copy()
 
@@ -357,7 +352,7 @@ plt.show()
 \
 There is no clear relationship between depression scores based on hours worked per week, although there does seem to be a larger cluster of scores around 6.5 to 18.
 
-```{python}
+```{python sleep regression plot}
 # prepare sleep data for analysis
 tmp_sleep = df[['SLD012', 'depression_score']].copy()
 
@@ -389,7 +384,7 @@ plt.grid(True, linestyle=':', alpha=0.5)
 plt.show()
 ```
 
-```{python}
+```{python sleep regression plot}
 # extract weekend sleep data and score
 tmp_weekend = df[['SLD013', 'depression_score']].copy()
 
@@ -423,7 +418,7 @@ plt.show()
 
 There seem to be no clear trends between either weekend and weekday sleep hours and depression score. The only noticeable trend is weekend sleep hours are clustered more around 8.5 hours of sleep. For almost every sleep duration represented, there is significant vertical spread, suggesting that there are more factors at hand contributing to depression score.
 
-```{python}
+```{python weight perception box plot}
 # isolate weight perception data
 tmp2 = df[['WHQ030', 'depression_score']].copy()
 
@@ -450,7 +445,7 @@ plt.show()
 
 It appears that the median depression score for the group that considers themselves underweight is slightly higher than both the other groups. Data from the overweight perception and underweight perception group have larger range than the "about the right weight" perception group.
 
-```{python}
+```{python BMI regression plot}
 # gather height weight and depression columns
 tmp3 = df[['WHD010', 'WHD020', 'depression_score']].copy()
 tmp3['WHD010'] = pd.to_numeric(tmp3['WHD010'], errors='coerce')
