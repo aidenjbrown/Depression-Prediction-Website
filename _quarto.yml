@@ -1,6 +1,10 @@
 project:
   type: website
   output-dir: docs
+  execute-dir: project
+  render: 
+  - index.qmd
+  - Depression_Website.qmd
 
 website:
   title: "M244 Project"
@@ -8,6 +12,8 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: Depression_Website.qmd
+        text: Final Report
 
 format:
   html:
@@ -16,6 +22,12 @@ format:
       - brand
     css: styles.css
     toc: true
+
+
+execute:
+  echo: false
+  warning: false
+  message: false
 
 
 
