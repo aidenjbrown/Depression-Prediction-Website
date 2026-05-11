@@ -4,15 +4,12 @@ project:
   execute-dir: project
   render: 
   - index.qmd
-  - Depression_Website.qmd
 
 website:
   title: "M244 Project"
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - href: Depression_Website.qmd
         text: Final Report
 
 format:
