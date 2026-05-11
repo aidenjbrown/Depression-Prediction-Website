@@ -1,7 +1,6 @@
 /.quarto/
 **/*.quarto_ipynb
 .DS_Store
-docs/
 _site/
 Depression-Prediction-Website/
 Depression-Prediction-Website/
