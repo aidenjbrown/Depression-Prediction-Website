@@ -12,20 +12,19 @@ Our area of research is predicting depression score based on demographics, incom
 
 ## Motivation
 
-One of the most challenging health crises facing our world today is the mental health epidemic. From August 2021 - August 2023, the CDC reported that 13.1% of U.S. adolescents and adults over the age of 12 struggle with depression, with the highest prevalence observed among teenagers and adolescents. We wanted to determine if and how factors such as income, sleep, hours worked each week, and demographics like race, gender, and level of education correlate to depression diagnosis. 
+One of the most challenging health crises facing our world today is the mental health epidemic. From August 2021 - August 2023, the CDC reported that 13.1% of U.S. adolescents and adults over the age of 12 struggle with depression, with the highest prevalence observed among teenagers and adolescents. We wanted to determine if and how factors such as income, sleep, hours worked each week, and demographics like race, gender, and level of education correlate to depression diagnosis.
 
 ## Research Question:
+
 What impact, if any, do different demographics, sleep behaviors, incomes, body weights, and hours worked each week have on predicting depression score?
 
 ## Data Source - CDC’s NHANES Survey
 
 We sourced our data from the CDC because it produces annual reports on many different health conditions and statistics in the U.S., including depression, and it is the United States’ main public health organization, so its data should be credible. Specifically, we picked the 2017-2018 data because it was the most accessible and complete data. NHANES stands for the National Health and Nutrition Examination Survey. Additionally, depression score is a metric that the CDC uses to determine population-level depression prevalence, and it is an aggregation of scores from 0-3 that capture the severity of one of nine depression symptoms. Although the CDC calculates a depression score, it was not recorded in the NHANES dataset, so we calculated it by aggregating the scores for each of the 9 predictors. Lastly, given that NHANES is a survey, it is not a formal depression diagnosis. However, it is intended to give population-level estimates of the prevalence of different depression symptoms.
 
-
 ## Disclaimer
-We are not psychiatry or psychology professionals, and all results are for the purpose of finding patterns to guide the course of future research, not to diagnose real people.
- 
 
+We are not psychiatry or psychology professionals, and all results are for the purpose of finding patterns to guide the course of future research, not to diagnose real people.
 
 # Methodology
 
@@ -53,69 +52,50 @@ We excluded any observations that have NaN for depression_score since it is our 
 
 ### New Variables Created:
 
-In addition to depression_score, we created new variables for any of the encoded categorical variables, such as income or race, because the encoded values were hard to interpret without looking at the dataset’s codebook. We also created BMI using WHD010 and WHD020 using the formula 703 * (WHD020 / WHD010^2).
-
-
+In addition to depression_score, we created new variables for any of the encoded categorical variables, such as income or race, because the encoded values were hard to interpret without looking at the dataset’s codebook. We also created BMI using WHD010 and WHD020 using the formula 703 \* (WHD020 / WHD010\^2).
 
 ### Highlights from EDA
-
 
 ![Distribution of Depression Scores](images/depression_score_distribution.png)
 
 Based on the histogram, the most common depression scores appeared to be from about 10-12.5. Additionally, the histogram is skewed right, which indicates that there is an observable minority of participants with a depression score greater than or equal to 12.5 (as there is no observed score above 25). Despite the skew, the majority of participants have a relatively low depression score.
 
-
-
 ![Comparing Education to Depression Score](images/education_boxplot.png)
 
 It appears that those who have graduated high school (or the equivalent) or have received a higher level of education have a substantially lower median depression score than those who have not reached this level of education. While the median depression score of those with less education than the equivalent of a high school degree is about 13, it is only about 10.5 for those who have received the equivalent of a high school education or higher.
 
-
 ![Comparing Granular Income to Depression Score](images/granular_income_boxplot.png)
 
-![Comparing Coarse Income to Depression Score](images/coarse_income_boxplot.png)
-It appears that those whose households make 35,000 to 44,999, 55,000 to 64,999, 100,000 and over, and under 20,000 dollars have a substantially lower median depression score than those who make any other quantity of money. These results are fascinating because the trend that a higher household income is correlated with a lower depression score is challenged by the fact that the median depression score for those whose household income is 20,000 dollars and over is much smaller than that of those who make under 20,000 dollars, with the former and latter levels having median depression scores of approximately 10.5 and 13 respectively. Additionally, participants whose household income ranges from 0 to 54,999 dollars have a much higher spread of depression scores than those who make 55,000 dollars or more a year, suggesting that the range of depression scores decreases as income increases once the 55,000 dollar threshold is reached.
-
+![Comparing Coarse Income to Depression Score](images/coarse_income_boxplot.png) It appears that those whose households make 35,000 to 44,999, 55,000 to 64,999, 100,000 and over, and under 20,000 dollars have a substantially lower median depression score than those who make any other quantity of money. These results are fascinating because the trend that a higher household income is correlated with a lower depression score is challenged by the fact that the median depression score for those whose household income is 20,000 dollars and over is much smaller than that of those who make under 20,000 dollars, with the former and latter levels having median depression scores of approximately 10.5 and 13 respectively. Additionally, participants whose household income ranges from 0 to 54,999 dollars have a much higher spread of depression scores than those who make 55,000 dollars or more a year, suggesting that the range of depression scores decreases as income increases once the 55,000 dollar threshold is reached.
 
 ## Models Created
 
-For our analysis, we created a linear regression model, LASSO model, and neural network model using race (RIDRETH3), gender (RIAGENDR), ratio of income to the poverty line (INDFMPIR), average weekday sleep (SLD012), and average weekend sleep (SLD013) as predictors and depression score as our outcome. The only one of these variables we didn’t explore in our EDA was the ratio of the participant’s income to the poverty line, but we thought that this would be a good predictor to model the surprising relationship we found between depression score and annual household income for those who made over and under $20,000 per year. We wanted to create a linear model to determine whether there is an obvious relationship between our predictors and depression score before using more advanced analysis methods. We used LASSO because it is a good way to prevent overfitting while still using a relatively simple model. We then used a neural network to determine if a model could predict depression score relatively accurately based on our selected factors, using it as a pressure test to see if our hypothesized predictors were strong enough to depict depression score. Lastly, we used gradient boosting on all possible predictor variables (i.e., anything in the codebook aside from sequence number, depression indicator question scores, and depression score) to determine if we overlooked a metric during EDA that substantially impacted depression score.
+For our analysis we created a linear regression model, LASSO model, and neural network model using race (`RIDRETH3`), gender (`RIAGENDR`), ratio of income to the poverty line (`INDFMPIR`), average weekday sleep (`SLD012`), and average weekend sleep (`SLD013`) as predictors and depression score as our outcome. The only one of these variables we didn't explore in our EDA was the ratio of the participant's income to the poverty line, but we thought that this would be a good predictor to model the surprising relationship we found between depression score and annual household income for those who made **over and under \$20,000 per year**.
 
-<!-- TODO: Tony, is this what the purpose of our gradient boosting was? Feel free to edit if not or if you have more to say. -->
-
+We wanted to create a linear model to determine if there is an obvious relationship between our predictors and depression score before using more advanced analysis methods. We used LASSO because it is a good way to prevent overfitting while still using a relatively simple model with L1 regularization We then used a neural network trained over 50 epochs with two hidden linear layers incorporated with ReLU activation and a 40% dropout rate for regularization to determine if the model could predict depression score relatively accurately based on our selected factors, using it as a pressure test to see if our hypothesized predictors were strong enough to depict depression score. Lastly, we used gradient boosting on all possible predictor variables (meaning anything that is in the codebook aside from sequence number, depression indicator question scores, and depression score) because we wanted to determine if there was a metric that substantially impacted depression score that we overlooked in EDA. Since gradient boosting is a greedy tree-based model, it has the capacity to indicate which predictors have the most influence on depression score, and it is also a good way to determine if there are any non-linear relationships between our predictors and depression score that we missed in EDA. This model was used due to the intricate and highly nuanced intersectional relationship between the variables which causes multicollinearity. We used SHAP values to visualize the impact of each predictor on depression score in our gradient boosting model.
 
 ### Visualization of Gradient Boosting
 
 #### Regression Model
 
-![Gradient Boosting: Regression Model with SHAP values](images/regression_model.png){width=75%}
+![Gradient Boosting: Regression Model with SHAP values](images/regression_model.png){width="75%"}
 
+##### Classificaition Model
 
-#####  Classificaition Model
-
-![Gradient Boosting: Classification Model with SHAP vaues](images/classification_model.png){width=75%}
-
-
-
-
-
+![Gradient Boosting: Classification Model with SHAP vaues](images/classification_model.png){width="75%"}
 
 # Results
 
 ### Performance of the Models
 
-<!-- TODO: Tony -->
+All of the deployed models performed inefficiently at predicting depression score. Specifically, all 5 models of Linear Regression using Ordinary Least Square Error and L1 Error (LASSO), Neural Network, Gradient Boosting Regression, and Gradient Boosting Classification performed worse on average than guessing the mean depression score for all participants. Specifically, OLS and LASSO output similar RMSE and R\^2 scores of 4.39 and -0.034, respectively, which were the lowest RMSE score in all deployed models. Meanwhile, the neural network model had an RMSE of 4.6 and R\^2 of -0.15, which were the highest RMSE score and the lowest R\^2 value. The gradient boosting regression model had an RMSE of 4.48 and R\^2 of -0.022, which was the lowest RMSE score. The gradient boosting classification model had an accuracy rate of 60%, a recall rate of 85%, and a precision rate of 64%.
 
 # Discussion
 
-<!-- TODO: Tony -->
+The results suggest our predictor variables are not strong enough to predict depression score. Our models performing worse than guessing the mean depression score suggests that there may be a lot of noise in the data, and that our predictor variables may not be able to capture the complexity of depression score. This could be due to a variety of factors, such as the fact that depression is a complex and multifaceted condition that is influenced by a wide range of factors, including genetics, environment, and life experiences. Thus, our predictor variables may not have been able to capture the nuances of depression score, such as the fact that depression can be experienced differently across individuals, due to the variety of different subtypes of depression that are influenced by different factors, which is not captured entirely by the NHANES questionnaire.
 
+It is noticeable that using all of our variables instead of the subset sized 5 delivered in the Gradient Boosting model output a slightly higher R\^2 score, which suggests that there are likely other variables that have a stronger relationship with depression score that we did not include in our models. Another interesting observation is of the high recall rate but low precision and low accuracy in the SHAP analysis of the Gradient Boosting model, which suggests that while Gradient Boosting accurately predicts a good portion of true positive, it also has a high rate of false positives. This may indicate that there are many predictors that are not actually relevant to depression score. Additionally, the low accuracy (60%) suggests that there may be a lot of noise in the data, and that our predictor variables may not be able to capture the complexity of depression score, which is consistent with our other models performing worse than guessing the mean depression score.
 
 # Conclusion
 
-
 To conclude, our predictor variables did not strongly predict depression score. Although the results of our EDA suggested possible relationships between income, education, and depression score, our models performed worse on average than guessing the mean depression score. Therefore, our models demonstrated that our predictors are not strong enough to conclude that there is a strong relationship between our selected predictor variables and depression score. We aren’t claiming that our predictor variables have no impact on depression score, but our models show they aren’t influential enough on their own to predict it. The main focus of any future work would be to see how our models (especially the neural network) perform when used on data outside of 2017-2018, and outside of the US. Additionally, we would increase our subset of predictor variables to see if there are any stronger correlations between other demographics we missed, or even other health conditions and depression score. Lastly, we would want to find another metric for calculating the severity of depression across the population other than the NHANES’ metrics and see if the same predictor variables are correlated with depression score.
-
-
-
-
