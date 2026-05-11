@@ -32,27 +32,27 @@ We are not psychiatry or psychology professionals, and all results are for the p
 
 ### Outcome Variable
 
-Depression score: We calculated this by aggregating the scores from DPQ010-DPQ090, which measured the severity of a participant’s experience of a depression symptom. It is a good proxy for depression diagnosis because it is the exact criteria the CDC uses to estimate the prevalence of depression across the population.
+Depression score: We calculated this by aggregating the scores from `DPQ010`-`DPQ090`, which measured the severity of a participant’s experience of a depression symptom. It is a good proxy for depression diagnosis because it is the exact criteria the CDC uses to estimate the prevalence of depression across the population.
 
 ### Key Explanatory Variables (EDA)
 
-Our key explanatory variables were race (RIDRETH3 and race_label), income (‘INDHHIN2’ / ‘income_label’), hours worked last week (OCQ180), and level of education (DMDEDUC2 / education_label). We also included sleep-related variables such as weekday sleep hours (SLD012), weekend sleep hours (SLD013), perception of weight (WHQ030), and BMI (computed from WHD010 and WHD020).
+Our key explanatory variables were race (`RIDRETH3` and `race_label`), income (`INDHHIN2` / `income_label`), hours worked last week (`OCQ180`), and level of education (`DMDEDUC2` / `education_label`). We also included sleep-related variables such as weekday sleep hours (`SLD012`), weekend sleep hours (`SLD013`), perception of weight (`WHQ030`), and BMI (computed from `WHD010` and `WHD020`).
 
 ### Data Cleaning
 
-We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN, so the scores could only reach a maximum of 27 (which is the maximum score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric and replacing NHANES special codes, such as 77777 and 99999 in OCQ180, and 77 and 99 in sleep variables like SLD012 and SLD013, with NaN.
+We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN, so the scores could only reach a maximum of 27 (which is the maximum score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric and replacing NHANES special codes, such as `77777` and `99999` in `OCQ180`, and `77` and `99` in sleep variables like `SLD012` and `SLD013`, with NaN.
 
 ### Data Wrangling
 
-We wrangled the data by performing an inner merge of all 4 raw datasets by SEQN number. We chose an inner merge because we wanted to have the most data per row possible, even if it meant dropping some participants. We also dropped all of the variables we did not need from the raw data by choosing to only keep the subset that we did need, including OCQ180, SLD012, SLD013, WHQ030, WHD010, WHD020, and depression_score.
+We wrangled the data by performing an inner merge of all 4 raw datasets by `SEQN` number. We chose an inner merge because we wanted to have the most data per row possible, even if it meant dropping some participants. We also dropped all of the variables we did not need from the raw data by choosing to only keep the subset that we did need, including `OCQ180`, `SLD012`, `SLD013`, `WHQ030`, `WHD010`, `WHD020`, and `depression_score`.
 
 ### Dropped/Excluded Observations:
 
-We excluded any observations that have NaN for depression_score since it is our key outcome variable, and if a participant does not have that score calculated, that participant is not useful for this data analysis. We also excluded any participants who did not answer at least 6 of the 9 depression indicator questions because we wanted to minimize skewing the data to the left due to participants simply answering fewer questions. In addition, we excluded invalid or missing values in the explanatory variables such as OCQ180, SLD012, SLD013, WHD010, and WHD020.
+We excluded any observations that have NaN for `depression_score` since it is our key outcome variable, and if a participant does not have that score calculated, that participant is not useful for this data analysis. We also excluded any participants who did not answer at least 6 of the 9 depression indicator questions because we wanted to minimize skewing the data to the left due to participants simply answering fewer questions. In addition, we excluded invalid or missing values in the explanatory variables such as `OCQ180`, `SLD012`, `SLD013`, `WHD010`, and `WHD020`.
 
 ### New Variables Created:
 
-In addition to depression_score, we created new variables for any of the encoded categorical variables, such as income or race, because the encoded values were hard to interpret without looking at the dataset’s codebook. We also created BMI using WHD010 and WHD020 using the formula 703 \* (WHD020 / WHD010\^2).
+In addition to `depression_score`, we created new variables for any of the encoded categorical variables, such as income or race, because the encoded values were hard to interpret without looking at the dataset’s codebook. We also created BMI using `WHD010` and `WHD020` using the formula 703 \* (`WHD020` / `WHD010`^2).
 
 ### Highlights from EDA
 
@@ -80,7 +80,7 @@ We wanted to create a linear model to determine if there is an obvious relations
 
 ![Gradient Boosting: Regression Model with SHAP values](images/regression_model.png){width="75%"}
 
-##### Classificaition Model
+##### Classification Model
 
 ![Gradient Boosting: Classification Model with SHAP vaues](images/classification_model.png){width="75%"}
 
@@ -88,13 +88,13 @@ We wanted to create a linear model to determine if there is an obvious relations
 
 ### Performance of the Models
 
-All of the deployed models performed inefficiently at predicting depression score. Specifically, all 5 models of Linear Regression using Ordinary Least Square Error and L1 Error (LASSO), Neural Network, Gradient Boosting Regression, and Gradient Boosting Classification performed worse on average than guessing the mean depression score for all participants. Specifically, OLS and LASSO output similar RMSE and R\^2 scores of 4.39 and -0.034, respectively, which were the lowest RMSE score in all deployed models. Meanwhile, the neural network model had an RMSE of 4.6 and R\^2 of -0.15, which were the highest RMSE score and the lowest R\^2 value. The gradient boosting regression model had an RMSE of 4.48 and R\^2 of -0.022, which was the lowest RMSE score. The gradient boosting classification model had an accuracy rate of 60%, a recall rate of 85%, and a precision rate of 64%.
+All of the deployed models performed inefficiently at predicting depression score. Specifically, all 5 models of Linear Regression using Ordinary Least Square Error and L1 Error (LASSO), Neural Network, Gradient Boosting Regression, and Gradient Boosting Classification performed worse on average than guessing the mean depression score for all participants. Specifically, OLS and LASSO output similar RMSE and R² scores of 4.39 and -0.034, respectively, which were the lowest RMSE score in all deployed models. Meanwhile, the neural network model had an RMSE of 4.6 and R² of -0.15, which were the highest RMSE score and the lowest R² value. The gradient boosting regression model had an RMSE of 4.48 and R² of -0.022, which was the lowest RMSE score. The gradient boosting classification model had an accuracy rate of 60%, a recall rate of 85%, and a precision rate of 64%.
 
 # Discussion
 
 The results suggest our predictor variables are not strong enough to predict depression score. Our models performing worse than guessing the mean depression score suggests that there may be a lot of noise in the data, and that our predictor variables may not be able to capture the complexity of depression score. This could be due to a variety of factors, such as the fact that depression is a complex and multifaceted condition that is influenced by a wide range of factors, including genetics, environment, and life experiences. Thus, our predictor variables may not have been able to capture the nuances of depression score, such as the fact that depression can be experienced differently across individuals, due to the variety of different subtypes of depression that are influenced by different factors, which is not captured entirely by the NHANES questionnaire.
 
-It is noticeable that using all of our variables instead of the subset sized 5 delivered in the Gradient Boosting model output a slightly higher R\^2 score, which suggests that there are likely other variables that have a stronger relationship with depression score that we did not include in our models. Another interesting observation is of the high recall rate but low precision and low accuracy in the SHAP analysis of the Gradient Boosting model, which suggests that while Gradient Boosting accurately predicts a good portion of true positive, it also has a high rate of false positives. This may indicate that there are many predictors that are not actually relevant to depression score. Additionally, the low accuracy (60%) suggests that there may be a lot of noise in the data, and that our predictor variables may not be able to capture the complexity of depression score, which is consistent with our other models performing worse than guessing the mean depression score.
+It is noticeable that using all of our variables instead of the subset sized 5 delivered in the Gradient Boosting model output a slightly higher R² score, which suggests that there are likely other variables that have a stronger relationship with depression score that we did not include in our models. Another interesting observation is of the high recall rate but low precision and low accuracy in the SHAP analysis of the Gradient Boosting model, which suggests that while Gradient Boosting accurately predicts a good portion of true positive, it also has a high rate of false positives. This may indicate that there are many predictors that are not actually relevant to depression score. Additionally, the low accuracy (60%) suggests that there may be a lot of noise in the data, and that our predictor variables may not be able to capture the complexity of depression score, which is consistent with our other models performing worse than guessing the mean depression score.
 
 # Conclusion
 
