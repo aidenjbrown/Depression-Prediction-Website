@@ -40,7 +40,7 @@ Our key explanatory variables were race (`RIDRETH3` and `race_label`), income (`
 
 ### Data Cleaning
 
-We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN, so the scores could only reach a maximum of 27 (which is the maximum score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric and replacing NHANES special codes, such as `77777` and `99999` in `OCQ180`, and `77` and `99` in sleep variables like `SLD012` and `SLD013`, with NaN.
+We had to clean the data by replacing any depression symptom indicator that was not between 0 and 3 with a NaN, so the scores could only reach a maximum of 27 (which is the maximum score for depression screening in the NHANES). We also cleaned explanatory variables by converting them to numeric variables and replacing NHANES special codes, such as `77777` and `99999` in `OCQ180`, and `77` and `99` in sleep variables like `SLD012` and `SLD013`, with NaN.
 
 ### Data Wrangling
 
